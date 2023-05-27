@@ -1,0 +1,17 @@
+{
+	"version": "0.2",
+	"ignorePaths": [],
+	"dictionaryDefinitions": [],
+	"dictionaries": [],
+	"words": [
+		"boto",
+		"corsheaders",
+		"mediafiles",
+		"psycopg",
+		"redoc",
+		"whitenoise",
+		"yasg"
+	],
+	"ignoreWords": [],
+	"import": []
+}

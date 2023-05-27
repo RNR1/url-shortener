@@ -10,7 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from .environment import EnvVar
+from decouple import config, Csv
+
+environment = EnvVar(config('SECRET_ID', default=None))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q9wv^i38*izh=h#^8jfii)w8i#ywz$(%xk9(sdp0-xxw51rod='
+SECRET_KEY = environment.load('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = environment.load('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = environment.load('ALLOWED_HOSTS', default='', cast=Csv())
+
+CSRF_TRUSTED_ORIGINS = environment.load(
+    'CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
 
 
 # Application definition
@@ -37,11 +45,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
+    'rest_framework',
+    'drf_yasg',
+    'api'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'UrlShortener.middleware.HealthCheckMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -75,8 +90,12 @@ WSGI_APPLICATION = 'UrlShortener.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': environment.load('DB_NAME', default=''),
+        'USER': environment.load('DB_USER', default='postgres'),
+        'PASSWORD': environment.load('DB_PASSWORD', default='postgres'),
+        'HOST': environment.load('DB_HOST', default='localhost'),
+        'PORT': environment.load('DB_PORT', default='5432'),
     }
 }
 
@@ -116,8 +135,27 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = environment.load(
+    'STATIC_ROOT', default=os.path.join(BASE_DIR, 'staticfiles'))
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STORAGES = {
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'}
+}
+
+
+# Always use IPython for shell_plus
+SHELL_PLUS = "ipython"
+
+# CORS SETTINGS
+CORS_ALLOW_ALL_ORIGINS = True
+
+# AWS
+AWS_ACCESS_KEY_ID = environment.load('AWS_ACCESS_KEY_ID', default=None)
+AWS_SECRET_ACCESS_KEY = environment.load('AWS_SECRET_ACCESS_KEY', default=None)
+AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
