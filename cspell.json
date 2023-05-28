@@ -9,6 +9,7 @@
 		"mediafiles",
 		"psycopg",
 		"redoc",
+		"viewsets",
 		"whitenoise",
 		"yasg"
 	],
