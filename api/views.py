@@ -6,6 +6,7 @@ from drf_yasg.utils import swagger_auto_schema
 from api.filters import URLStatsFilter
 from api.models import URL, Visitor
 from api.serializers import URLSerializer, URLStatsFilterSerializer, URLStatsSerializer, VisitorSerializer
+from drf_yasg import openapi
 
 
 class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -37,6 +38,12 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     @swagger_auto_schema(responses={status.HTTP_201_CREATED: 'Generated short URL'})
     @decorators.action(methods=['post'], detail=False)
     def generate(self, request: request.Request):
+        """ Generate a short URL
+
+            Receives an `original_link` param, and returns a short version of it
+
+        """
+
         serializer: URLSerializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -44,7 +51,21 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         return response.Response(instance.short_url(), status=status.HTTP_201_CREATED)
 
+    @swagger_auto_schema(responses={
+        status.HTTP_200_OK: None,
+        status.HTTP_302_FOUND: openapi.Response(
+            'This endpoint is redirecting user to the original URL')
+    })
     def retrieve(self, request: request.Request, *args, **kwargs):
+        """ Visit short URL
+
+            Receives the `hash` param of the short URL, and redirects the visitor to the original URL.
+
+            * note: This endpoint will not redirect the visitor on the Swagger UI
+            * note: In addition to redirection of the visitor, this endpoint also collects user data provided by the IP address
+
+        """
+
         instance: URL = self.get_object()
 
         ip_address = Visitor.get_ip()
@@ -58,6 +79,12 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     @swagger_auto_schema(query_serializer=URLStatsFilterSerializer)
     @decorators.action(methods=['get'], detail=True, serializer_class=URLStatsSerializer, filter_backends=(URLStatsFilter,))
     def stats(self, request: request.Request, hash=None):
+        """ View URL statistics
+
+            Receives the `hash` param of the short URL, and returns an aggregated statistics of the URL.
+
+        """
+
         instance: URL = self.get_object()
 
         visitors = self.filter_queryset(instance.visitors.all())

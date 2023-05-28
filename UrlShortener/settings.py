@@ -161,3 +161,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 AWS_ACCESS_KEY_ID = environment.load('AWS_ACCESS_KEY_ID', default=None)
 AWS_SECRET_ACCESS_KEY = environment.load('AWS_SECRET_ACCESS_KEY', default=None)
 AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
+
+# Swagger
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': False
+}
