@@ -1,4 +1,5 @@
 from django.http.response import HttpResponseRedirect
+from django.core.cache import cache
 from django.db import models
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, decorators, request, response, status
@@ -14,7 +15,7 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = URLSerializer
     lookup_field = 'hash'
 
-    def get_object(self):
+    def get_object(self) -> URL:
         queryset = self.get_queryset()
 
         # Perform the lookup filtering.
@@ -28,7 +29,7 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         )
 
         filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
-        obj = get_object_or_404(queryset, **filter_kwargs)
+        obj: URL = get_object_or_404(queryset, **filter_kwargs)
 
         # May raise a permission denied
         self.check_object_permissions(self.request, obj)
@@ -66,15 +67,21 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         """
 
-        instance: URL = self.get_object()
+        hash = kwargs.get('hash')
+        original_url = cache.get(hash, None)
+        if not original_url:
+            instance: URL = self.get_object()
+            original_url = instance.original_url
+            cache.set(instance.hash, instance.original_url, 3600)
 
         ip_address = Visitor.get_ip()
-        serializer = VisitorSerializer(data={'ip_address': ip_address})
-        serializer.is_valid()
+        serializer = VisitorSerializer(
+            data={'ip_address': ip_address, 'url': hash})
+        serializer.is_valid(raise_exception=True)
 
-        instance.visitors.create(**serializer.validated_data)
+        serializer.create(serializer.validated_data)
 
-        return HttpResponseRedirect(redirect_to=instance.original_url)
+        return HttpResponseRedirect(redirect_to=original_url)
 
     @swagger_auto_schema(query_serializer=URLStatsFilterSerializer)
     @decorators.action(methods=['get'], detail=True, serializer_class=URLStatsSerializer, filter_backends=(URLStatsFilter,))

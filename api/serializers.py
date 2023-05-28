@@ -49,7 +49,7 @@ class VisitorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Visitor
-        fields = ('ip_address',)
+        fields = ('ip_address', 'url')
 
 
 class URLStatsSerializer(serializers.Serializer):

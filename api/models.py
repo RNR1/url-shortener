@@ -22,7 +22,7 @@ class URL(models.Model):
         return ''.join([random.choice(characters) for i in range(length)])
 
     def short_url(self):
-        return f'{settings.BACKEND_URL}/{self.hash}'
+        return f'{settings.BACKEND_URL}/{self.hash}/'
 
     def __str__(self) -> str:
         return f"Short URL for {self.original_url}"
