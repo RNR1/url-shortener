@@ -50,3 +50,27 @@ class VisitorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Visitor
         fields = ('ip_address',)
+
+
+class URLStatsSerializer(serializers.Serializer):
+    unique_visitors = serializers.IntegerField()
+    unique_cities = serializers.IntegerField()
+    unique_countries = serializers.IntegerField()
+    unique_regions = serializers.IntegerField()
+    most_recent_visit = serializers.DateTimeField(format="%x %X")
+
+
+class URLStatsFilterSerializer(serializers.Serializer):
+    start = serializers.DateTimeField(required=False)
+    end = serializers.DateTimeField(required=False)
+
+    def validate(self, attrs):
+        start = attrs.get('start', None)
+        end = attrs.get('end', None)
+        if start and not end:
+            raise exceptions.ValidationError(
+                {'end': ["This field is required when start is provided"]})
+        elif end and not start:
+            raise exceptions.ValidationError(
+                {'start': ["This field is required when end is provided"]})
+        return attrs
