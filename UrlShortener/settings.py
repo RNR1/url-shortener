@@ -35,6 +35,8 @@ ALLOWED_HOSTS = environment.load('ALLOWED_HOSTS', default='', cast=Csv())
 CSRF_TRUSTED_ORIGINS = environment.load(
     'CSRF_TRUSTED_ORIGINS', default='', cast=Csv())
 
+BACKEND_URL = environment.load('BACKEND_URL', default='http://localhost:8000')
+
 
 # Application definition
 
