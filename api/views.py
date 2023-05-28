@@ -1,7 +1,8 @@
+from django.http.response import HttpResponseRedirect
 from rest_framework import viewsets, mixins, decorators, request, response, status
 from drf_yasg.utils import swagger_auto_schema
-from api.models import URL
-from api.serializers import URLSerializer
+from api.models import URL, Visitor
+from api.serializers import URLSerializer, VisitorSerializer
 
 
 class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -18,3 +19,14 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         instance: URL = serializer.save()
 
         return response.Response(instance.short_url(), status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request: request.Request, *args, **kwargs):
+        instance: URL = self.get_object()
+
+        ip_address = Visitor.get_ip()
+        serializer = VisitorSerializer(data={'ip_address': ip_address})
+        serializer.is_valid()
+
+        instance.visitors.create(**serializer.validated_data)
+
+        return HttpResponseRedirect(redirect_to=instance.original_url)
