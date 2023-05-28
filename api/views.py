@@ -9,6 +9,8 @@ from api.models import URL, Visitor
 from api.serializers import URLSerializer, URLStatsFilterSerializer, URLStatsSerializer, VisitorSerializer
 from drf_yasg import openapi
 
+from api.tasks import collect_visitor_data
+
 
 class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = URL.objects.all()
@@ -75,11 +77,7 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             cache.set(instance.hash, instance.original_url, 3600)
 
         ip_address = Visitor.get_ip()
-        serializer = VisitorSerializer(
-            data={'ip_address': ip_address, 'url': hash})
-        serializer.is_valid(raise_exception=True)
-
-        serializer.create(serializer.validated_data)
+        collect_visitor_data.delay(ip_address, hash)
 
         return HttpResponseRedirect(redirect_to=original_url)
 
