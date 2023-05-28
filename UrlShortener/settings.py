@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from .environment import EnvVar
 from decouple import config, Csv
+from kombu.utils.url import safequote
 
 environment = EnvVar(config('SECRET_ID', default=None))
 
@@ -178,3 +179,10 @@ SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
     'SECURITY_DEFINITIONS': False
 }
+
+# Celery settings
+
+CELERY_BROKER_URL = f'sqs://{safequote(AWS_ACCESS_KEY_ID)}:{safequote(AWS_SECRET_ACCESS_KEY)}@'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'

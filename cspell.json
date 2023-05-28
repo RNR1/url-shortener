@@ -6,9 +6,11 @@
 	"words": [
 		"boto",
 		"corsheaders",
+		"kombu",
 		"mediafiles",
 		"psycopg",
 		"redoc",
+		"safequote",
 		"viewsets",
 		"whitenoise",
 		"yasg"
