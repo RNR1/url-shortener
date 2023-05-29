@@ -177,7 +177,7 @@ AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
 
 SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
-    'SECURITY_DEFINITIONS': False
+    'SECURITY_DEFINITIONS': None
 }
 
 # Celery settings
