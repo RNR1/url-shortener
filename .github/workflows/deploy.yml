@@ -17,7 +17,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY  }}
           aws-region: us-east-1
           instance-ids: ${{ secrets.SERVER_INSTANCE_ID  }}
-          comment: Deploy the master branch
+          comment: Deploy the main branch
           working-directory: /home/ubuntu/url-shortener
           command: /bin/sh ./deploy.sh
 
@@ -30,6 +30,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY  }}
           aws-region: us-east-1
           instance-ids: ${{ secrets.WORKER_INSTANCE_ID  }}
-          comment: Deploy the master branch
+          comment: Deploy the main branch
           working-directory: /home/ubuntu/url-shortener
           command: /bin/sh ./worker_deploy.sh
