@@ -31,7 +31,6 @@ class URL(models.Model):
 class Visitor(models.Model):
     url = models.ForeignKey(
         URL, on_delete=models.CASCADE, related_name="visitors")
-    ip_address = models.GenericIPAddressField()
     city = models.CharField(max_length=85)
     country = models.CharField(max_length=56)
     region = models.CharField(max_length=85)
@@ -47,4 +46,4 @@ class Visitor(models.Model):
         return response["ip"]
 
     def __str__(self) -> str:
-        return f"Visitor of {self.url} ({self.ip_address})"
+        return f"Visitor of {self.url} ({self.date_visited.strftime('%x %X')})"

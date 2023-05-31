@@ -5,13 +5,17 @@
 	"dictionaries": [],
 	"words": [
 		"boto",
+		"collectstatic",
 		"corsheaders",
+		"createsuperuser",
 		"kombu",
 		"mediafiles",
 		"peterkimzz",
 		"psycopg",
 		"redoc",
+		"runserver",
 		"safequote",
+		"venv",
 		"viewsets",
 		"whitenoise",
 		"yasg"

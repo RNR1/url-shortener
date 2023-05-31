@@ -30,12 +30,12 @@ class URLSerializer(serializers.ModelSerializer):
 
 
 class VisitorSerializer(serializers.ModelSerializer):
+    ip_address = serializers.IPAddressField()
 
     def validate(self, attrs: OrderedDict):
         ip_address = attrs.get('ip_address')
         response = requests.get(f'https://ipapi.co/{ip_address}/json/').json()
         attrs.update({
-            "ip_address": ip_address,
             "city": response.get("city"),
             "region": response.get("region"),
             "country": response.get("country_name"),
@@ -53,7 +53,7 @@ class VisitorSerializer(serializers.ModelSerializer):
 
 
 class URLStatsSerializer(serializers.Serializer):
-    unique_visitors = serializers.IntegerField()
+    visitors = serializers.IntegerField()
     unique_cities = serializers.IntegerField()
     unique_countries = serializers.IntegerField()
     unique_regions = serializers.IntegerField()

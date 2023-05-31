@@ -17,8 +17,10 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = URLSerializer
     lookup_field = 'hash'
 
-    def get_object(self) -> URL:
-        queryset = self.get_queryset()
+    def get_object(self, prefetch_visitors=False) -> URL:
+        queryset: models.QuerySet = self.get_queryset()
+        if prefetch_visitors:
+            queryset.prefetch_related('visitors')
 
         # Perform the lookup filtering.
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
@@ -90,11 +92,11 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         """
 
-        instance: URL = self.get_object()
+        instance: URL = self.get_object(prefetch_visitors=True)
 
         visitors = self.filter_queryset(instance.visitors.all())
         data = visitors.aggregate(
-            unique_visitors=models.Count('ip_address', distinct=True),
+            visitors=models.Count('id', distinct=True),
             unique_cities=models.Count('city', distinct=True),
             unique_countries=models.Count('country', distinct=True),
             unique_regions=models.Count('region', distinct=True),
