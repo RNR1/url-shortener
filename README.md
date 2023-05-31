@@ -1,6 +1,6 @@
 # URL Shortener
 
-Welcome to the repository of URL Shortener API!
+A URL Shortener Generator API, including URL generator, redirect, and visitor statistics.
 
 ## Table of Contents
 
