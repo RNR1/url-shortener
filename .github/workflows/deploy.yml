@@ -19,7 +19,7 @@ jobs:
           instance-ids: ${{ secrets.SERVER_INSTANCE_ID }}
           comment: Deploy the main branch
           working-directory: /home/ubuntu/url-shortener
-          command: sudo git pull origin main && /bin/sh ./deploy.sh
+          command: git pull origin main && /bin/sh ./deploy.sh
 
       - name: Deploy Worker
         uses: peterkimzz/aws-ssm-send-command@v1.1.1
@@ -30,4 +30,4 @@ jobs:
           instance-ids: ${{ secrets.WORKER_INSTANCE_ID }}
           comment: Deploy the main branch
           working-directory: /home/ubuntu/url-shortener
-          command: sudo git pull origin main && /bin/sh ./worker_deploy.sh
+          command: git pull origin main && /bin/sh ./worker_deploy.sh
