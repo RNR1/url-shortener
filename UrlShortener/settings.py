@@ -99,6 +99,9 @@ DATABASES = {
         'PASSWORD': environment.load('DB_PASSWORD', default='postgres'),
         'HOST': environment.load('DB_HOST', default='localhost'),
         'PORT': environment.load('DB_PORT', default='5432'),
+        "TEST": {
+            "NAME": "url_shortener_test",
+        },
     }
 }
 
