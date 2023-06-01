@@ -100,6 +100,7 @@ DATABASES = {
         'HOST': environment.load('DB_HOST', default='localhost'),
         'PORT': environment.load('DB_PORT', default='5432'),
         "TEST": {
+            "ENGINE": 'django.db.backends.sqlite3',
             "NAME": "url_shortener_test",
         },
     }
