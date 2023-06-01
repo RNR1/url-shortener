@@ -57,7 +57,7 @@ class URLStatsSerializer(serializers.Serializer):
     unique_cities = serializers.IntegerField()
     unique_countries = serializers.IntegerField()
     unique_regions = serializers.IntegerField()
-    most_recent_visit = serializers.DateTimeField(format="%x %X")
+    most_recent_visit = serializers.DateTimeField()
 
 
 class URLStatsFilterSerializer(serializers.Serializer):
