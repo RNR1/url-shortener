@@ -91,24 +91,28 @@ WSGI_APPLICATION = 'UrlShortener.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': environment.load('DB_NAME', default=''),
-        'USER': environment.load('DB_USER', default='postgres'),
-        'PASSWORD': environment.load('DB_PASSWORD', default='postgres'),
-        'HOST': environment.load('DB_HOST', default='localhost'),
-        'PORT': environment.load('DB_PORT', default='5432'),
-        'TEST': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'url_shortener_test',
-            'USER': None,
-            'PASSWORD': None,
-            'HOST': None,
-            'PORT': None,
-        },
+if os.getenv('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'github-actions',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': 'localhost',
+            'PORT': '5432'
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': environment.load('DB_NAME', default=''),
+            'USER': environment.load('DB_USER', default='postgres'),
+            'PASSWORD': environment.load('DB_PASSWORD', default='postgres'),
+            'HOST': environment.load('DB_HOST', default='localhost'),
+            'PORT': environment.load('DB_PORT', default='5432'),
+        }
+    }
 
 # Cache
 # https://docs.djangoproject.com/en/4.2/topics/cache/
