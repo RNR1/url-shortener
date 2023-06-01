@@ -45,7 +45,7 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     def generate(self, request: request.Request):
         """ Generate a short URL
 
-            Receives an `original_link` param, and returns a short version of it
+            Receives an `original_url` param, and returns a short version of it
 
         """
 

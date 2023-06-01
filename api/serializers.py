@@ -33,7 +33,7 @@ class VisitorSerializer(serializers.ModelSerializer):
     ip_address = serializers.IPAddressField()
 
     def validate(self, attrs: OrderedDict):
-        ip_address = attrs.get('ip_address')
+        ip_address = attrs.pop('ip_address')
         response = requests.get(f'https://ipapi.co/{ip_address}/json/').json()
         attrs.update({
             "city": response.get("city"),
