@@ -99,9 +99,13 @@ DATABASES = {
         'PASSWORD': environment.load('DB_PASSWORD', default='postgres'),
         'HOST': environment.load('DB_HOST', default='localhost'),
         'PORT': environment.load('DB_PORT', default='5432'),
-        "TEST": {
-            "ENGINE": 'django.db.backends.sqlite3',
-            "NAME": "url_shortener_test",
+        'TEST': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'url_shortener_test',
+            'USER': None,
+            'PASSWORD': None,
+            'HOST': None,
+            'PORT': None,
         },
     }
 }
@@ -167,7 +171,7 @@ STORAGES = {
 
 
 # Always use IPython for shell_plus
-SHELL_PLUS = "ipython"
+SHELL_PLUS = 'ipython'
 
 # CORS SETTINGS
 CORS_ALLOW_ALL_ORIGINS = True
