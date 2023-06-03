@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 import random
 import string
-from rest_framework import request
 
 MAX_HASH_LENGTH = 6
 
