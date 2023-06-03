@@ -78,7 +78,7 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
             original_url = instance.original_url
             cache.set(instance.hash, instance.original_url, 3600)
 
-        ip_address = Visitor.get_ip()
+        ip_address = request.META['HTTP_X_FORWARDED_FOR']
         collect_visitor_data.delay(ip_address, hash)
 
         return HttpResponseRedirect(redirect_to=original_url)

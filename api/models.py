@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 import random
 import string
-import requests
+from rest_framework import request
 
 MAX_HASH_LENGTH = 6
 
@@ -39,11 +39,6 @@ class Visitor(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     date_visited = models.DateTimeField(auto_now_add=True)
-
-    @staticmethod
-    def get_ip():
-        response = requests.get('https://api64.ipify.org?format=json').json()
-        return response["ip"]
 
     def __str__(self) -> str:
         return f"Visitor of {self.url} ({self.date_visited.strftime('%x %X')})"
