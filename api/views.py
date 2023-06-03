@@ -80,7 +80,7 @@ class URLViewsets(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         forwarded_ips = request.META['HTTP_X_FORWARDED_FOR']
         if type(forwarded_ips) == str:
-            ip_address = request.META['HTTP_X_FORWARDED_FOR'].split(",")[0]
+            ip_address = forwarded_ips.split(",")[0]
             collect_visitor_data.delay(ip_address, hash)
 
         return HttpResponseRedirect(redirect_to=original_url)
