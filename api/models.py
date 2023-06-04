@@ -3,6 +3,8 @@ from django.conf import settings
 import random
 import string
 
+import requests
+
 MAX_HASH_LENGTH = 6
 
 
@@ -39,5 +41,18 @@ class Visitor(models.Model):
     longitude = models.FloatField()
     date_visited = models.DateTimeField(auto_now_add=True)
 
+    @staticmethod
+    def collect_ip_data(ip_address) -> dict:
+        response = requests.get(f'https://ipapi.co/{ip_address}/json/').json()
+        return {
+            "city": response.get("city"),
+            "region": response.get("region"),
+            "country": response.get("country_name"),
+            "timezone": response.get("timezone"),
+            "currency": response.get("currency"),
+            "latitude": response.get("latitude"),
+            "longitude": response.get("longitude"),
+        }
+
     def __str__(self) -> str:
-        return f"Visitor of {self.url} ({self.date_visited.strftime('%x %X')})"
+        return f"Visitor of {self.url} ({self.date_visited})"
