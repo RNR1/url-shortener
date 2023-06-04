@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from datetime import datetime
 import requests
 from rest_framework import serializers, exceptions
 
@@ -34,16 +35,8 @@ class VisitorSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs: OrderedDict):
         ip_address = attrs.pop('ip_address')
-        response = requests.get(f'https://ipapi.co/{ip_address}/json/').json()
-        attrs.update({
-            "city": response.get("city"),
-            "region": response.get("region"),
-            "country": response.get("country_name"),
-            "timezone": response.get("timezone"),
-            "currency": response.get("currency"),
-            "latitude": response.get("latitude"),
-            "longitude": response.get("longitude"),
-        })
+        ip_data = Visitor.collect_ip_data(ip_address=ip_address)
+        attrs.update(**ip_data)
 
         return attrs
 
@@ -65,12 +58,21 @@ class URLStatsFilterSerializer(serializers.Serializer):
     end = serializers.DateTimeField(required=False)
 
     def validate(self, attrs):
-        start = attrs.get('start', None)
-        end = attrs.get('end', None)
-        if start and not end:
-            raise exceptions.ValidationError(
-                {'end': ["This field is required when start is provided"]})
-        elif end and not start:
-            raise exceptions.ValidationError(
-                {'start': ["This field is required when end is provided"]})
+        start: datetime = attrs.get('start', None)
+        end: datetime = attrs.get('end', None)
+        if start or end:
+            if start and not end:
+                raise exceptions.ValidationError({
+                    'end': ["This field is required when start is provided"]
+                })
+            if end and not start:
+                raise exceptions.ValidationError({
+                    'start': ["This field is required when end is provided"]
+                })
+            if start > end:
+                raise exceptions.ValidationError({
+                    'start': ["This field cannot be greater than end"],
+                    'end': ["This field cannot be smaller than start"],
+                })
+
         return attrs
