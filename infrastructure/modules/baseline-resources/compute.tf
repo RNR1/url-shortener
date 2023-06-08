@@ -1,7 +1,7 @@
 resource "aws_instance" "server" {
   ami             = var.ami
   instance_type   = var.instance_type
-  security_groups = [aws_security_group.ssh.id, aws_security_group.http.id]
+  security_groups = [aws_security_group.server.id]
 
   tags = {
     Name = "${var.app_slug}-${var.env_name}"
@@ -17,7 +17,7 @@ resource "aws_eip" "server_elastic_ip" {
 resource "aws_instance" "worker" {
   ami             = var.ami
   instance_type   = var.instance_type
-  security_groups = [aws_security_group.ssh.id]
+  security_groups = [aws_security_group.worker.id]
 
   tags = {
     Name = "${var.app_slug}-worker-${var.env_name}"

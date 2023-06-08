@@ -5,4 +5,6 @@ module "main" {
   domain   = "ronbraha.codes"
   app_slug = "url-shortener"
   app_name = "URL Shortener"
+
+  # Override default variables below
 }

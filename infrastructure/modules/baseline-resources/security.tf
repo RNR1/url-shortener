@@ -2,12 +2,21 @@ data "http" "myip" {
   url = "http://ipv4.icanhazip.com"
 }
 
-resource "aws_security_group" "ssh" {
-  name        = "ssh-specific-ip"
-  description = "Allow inbound SSH access to a specific IP address"
-  vpc_id      = data.aws_vpc.default_vpc.id
+resource "aws_security_group" "server" {
+  name        = "${var.app_slug}-server-sg-${var.env_name}"
+  description = "Allow inbound SSH and HTTP"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
+    description = "Allow all traffic through HTTP"
+    from_port   = 80
+    protocol    = "tcp"
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Allow SSH from my ip"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -15,6 +24,7 @@ resource "aws_security_group" "ssh" {
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -26,19 +36,21 @@ resource "aws_security_group" "ssh" {
   }
 }
 
-resource "aws_security_group" "http" {
-  name        = "http-in"
-  description = "Allow all inbound HTTP access"
-  vpc_id      = data.aws_vpc.default_vpc.id
+resource "aws_security_group" "worker" {
+  name        = "${var.app_slug}-worker-sg-${var.env_name}"
+  description = "Allow inbound SSH access to a specific IP address"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 80
-    protocol    = ""
-    to_port     = 80
-    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow SSH from my ip"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
   }
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -50,22 +62,25 @@ resource "aws_security_group" "http" {
   }
 }
 
-resource "aws_security_group" "https-in-http-out" {
-  name        = "https-in-http-out"
-  description = "Allow all inbound HTTPS and transmit HTTP"
-  vpc_id      = data.aws_vpc.default_vpc.id
+
+resource "aws_security_group" "lb" {
+  name        = "${var.app_slug}-lb-sg-${var.env_name}"
+  description = "Allow all inbound HTTPS and outbound HTTP"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
+    description = "Allow all inbound HTTPS"
     from_port   = 443
-    protocol    = ""
+    protocol    = "SSL"
     to_port     = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
+    description = "Allow all outbound HTTP"
     from_port   = 80
     to_port     = 80
-    protocol    = ""
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -74,16 +89,17 @@ resource "aws_security_group" "https-in-http-out" {
   }
 }
 
-resource "aws_security_group" "postgres_inbound" {
-  vpc_id      = data.aws_vpc.default_vpc.id
+resource "aws_security_group" "db" {
+  vpc_id      = aws_vpc.main.id
   name        = "rds-db-postgres"
   description = "Allow all inbound for Postgres"
 
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.server.id]
   }
 }
 
