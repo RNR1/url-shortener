@@ -65,7 +65,7 @@ six==1.16.0
 sqlparse==0.4.4
 stack-data==0.6.2
 traitlets==5.9.0
-types-awscrt==0.16.19
+types-awscrt==0.17.0
 types-s3transfer==0.6.1
 uritemplate==4.1.1
 urllib3==1.26.16
