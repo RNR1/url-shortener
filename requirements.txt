@@ -68,7 +68,7 @@ traitlets==5.9.0
 types-awscrt==0.17.0
 types-s3transfer==0.6.1
 uritemplate==4.1.1
-urllib3==1.26.16
+urllib3==2.0.6
 vine==5.0.0
 wcwidth==0.2.6
 whitenoise==6.5.0
