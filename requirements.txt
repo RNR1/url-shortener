@@ -9,7 +9,7 @@ boto3-stubs==1.28.15
 botocore==1.31.15
 botocore-stubs==1.31.14
 celery==5.3.1
-certifi==2023.7.22
+certifi==2024.7.4
 charset-normalizer==3.2.0
 click==8.1.6
 click-didyoumean==0.3.0
