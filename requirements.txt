@@ -5,7 +5,7 @@ asttokens==2.2.1
 backcall==0.2.0
 billiard==4.1.0
 boto3==1.28.15
-boto3-stubs==1.28.15
+boto3-stubs==1.35.46
 botocore==1.31.15
 botocore-stubs==1.31.14
 celery==5.3.1
